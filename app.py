@@ -329,7 +329,12 @@ def fetch_subjects():
 
         resp_student.raise_for_status()
 
-        student_data = resp_student.json()
+        try:
+            student_data = resp_student.json()
+        except ValueError:
+            # If ARMS returns HTML or empty response instead of JSON
+            return jsonify({"error": "Failed to retrieve valid data from ARMS server. The system might be unavailable or credentials expired."}), 500
+
         if not student_data.get("Table") or len(student_data["Table"]) == 0:
             return jsonify({"error": "No student found with this Registration Number."}), 404
 

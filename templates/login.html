@@ -5,133 +5,397 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login – ARMS Portal</title>
   <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #1e3c72, #2a5298);
-      --glass-bg: rgba(255, 255, 255, 0.15);
-      --glass-blur: 10px;
-      --primary: hsl(210, 100%, 55%);
-      --radius: 12px;
-    }
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       min-height: 100vh;
-      background: var(--bg-gradient);
+      background: #0f172a;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
     }
-    .login-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(var(--glass-blur));
-      border-radius: var(--radius);
-      padding: 2rem 2.5rem;
-      width: 350px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    .login-wrapper {
+      display: flex;
+      width: 900px;
+      max-width: 90%;
+      min-height: 540px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: none;
     }
-    h2 {
+    .panel-left {
+      width: 40%;
+      background-color: #534AB7;
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      margin-bottom: 1.5rem;
-      font-weight: 600;
     }
-    .form-group {
-      position: relative;
+    .panel-right {
+      width: 60%;
+      background-color: #1D9E75;
+      padding: 4rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    /* Left Panel Content */
+    .icon-frame {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+    .panel-left h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .panel-left p {
+      font-size: 1rem;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+    .dots {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .dot.active {
+      background: #fff;
+    }
+
+    /* Right Panel Content */
+    .flash {
+      background: rgba(255, 107, 107, 0.2);
+      border: 1px solid rgba(255, 107, 107, 0.5);
+      padding: 1rem;
+      border-radius: 10px;
       margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .label-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      gap: 6px;
+    }
+    .label-row svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
     }
     label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-      opacity: 0.9;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.65rem;
+      text-transform: lowercase;
+      margin-left: auto;
+    }
+    .badge svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    .input-icon-left {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+      pointer-events: none;
+    }
+    .toggle-visibility {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+    .toggle-visibility svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+    .toggle-visibility:hover {
+      color: #fff;
     }
     input {
       width: 100%;
-      padding: 0.75rem 1rem;
-      border: none;
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.25);
+      padding: 1rem 3rem; 
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid #fff;
+      border-radius: 10px;
       color: #fff;
       font-size: 1rem;
       outline: none;
-      transition: background 0.3s ease;
+      transition: box-shadow 0.3s ease;
     }
     input::placeholder {
       color: rgba(255, 255, 255, 0.7);
     }
     input:focus {
-      background: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
     }
-    .toggle-visibility {
-      position: absolute;
-      right: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      font-size: 1.1rem;
+    .error-msg {
+      color: #ffb3b3;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: none;
     }
-    button[type='submit'] {
+    .submit-btn {
       width: 100%;
-      padding: 0.75rem;
-      border: none;
-      border-radius: var(--radius);
-      background: var(--primary);
+      padding: 1rem;
+      background: #534AB7;
       color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
+      margin-top: 1rem;
       transition: background 0.3s ease;
     }
-    button[type='submit']:hover {
-      background: hsl(210, 100%, 45%);
+    .submit-btn:hover {
+      background: #3C3489;
     }
-    .flash {
-      background: rgba(255, 0, 0, 0.2);
-      padding: 0.75rem;
-      border-radius: var(--radius);
-      margin-bottom: 1rem;
-      text-align: center;
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .success-banner {
+      display: none;
+      background: rgba(46, 213, 115, 0.2);
+      border: 1px solid rgba(46, 213, 115, 0.5);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1.5rem;
+      color: #fff;
+      align-items: center;
+      gap: 10px;
+    }
+    .success-banner svg {
+      width: 20px;
+      height: 20px;
+      fill: #2ed573;
+      flex-shrink: 0;
+    }
+    
+    @media (max-width: 768px) {
+      .login-wrapper {
+        flex-direction: column;
+      }
+      .panel-left, .panel-right {
+        width: 100%;
+      }
+      .panel-left {
+        min-height: 300px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <h2>ARMS Login</h2>
-    {% with messages = get_flashed_messages(category_filter=["danger"]) %}
-      {% if messages %}
-        <div class="flash">{{ messages[0] }}</div>
-      {% endif %}
-    {% endwith %}
-    <form method="POST" action="{{ url_for('login') }}">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="password" id="username" name="username" placeholder="Enter username" required />
-        <button type="button" class="toggle-visibility" onclick="toggle('username')">👁️</button>
+  <div class="login-wrapper">
+    <!-- Left Panel -->
+    <div class="panel-left">
+      <div class="icon-frame">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M8 11h8v6H8z"></path>
+          <path d="M10 11V9a2 2 0 0 1 4 0v2"></path>
+        </svg>
       </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter password" required />
-        <button type="button" class="toggle-visibility" onclick="toggle('password')">👁️</button>
+      <h2>Secure Portal</h2>
+      <p>Your credentials are protected and encrypted end to end.</p>
+      <div class="dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
       </div>
-      <button type="submit">Login</button>
-    </form>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="panel-right">
+      {% with messages = get_flashed_messages(category_filter=["danger"]) %}
+        {% if messages %}
+          <div class="flash">{{ messages[0] }}</div>
+        {% endif %}
+      {% endwith %}
+      
+      <form id="loginForm" method="POST" action="{{ url_for('login') }}" novalidate>
+        
+        <!-- Username Field -->
+        <div class="form-group">
+          <div class="label-row">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <label for="username">USERNAME</label>
+            <div class="badge" id="usernameBadge">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.28 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+              </svg>
+              <span>masked</span>
+            </div>
+          </div>
+          <div class="input-wrapper">
+            <svg class="input-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <input type="password" id="username" name="username" placeholder="Enter username" />
+            <button type="button" class="toggle-visibility" onclick="toggleVisibility('username', 'usernameBadge')">
+              <svg id="usernameEyeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.28 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="error-msg" id="usernameError">Username is required</div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <div class="label-row">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+            </svg>
+            <label for="password">PASSWORD</label>
+            <div class="badge" id="passwordBadge">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.28 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+              </svg>
+              <span>masked</span>
+            </div>
+          </div>
+          <div class="input-wrapper">
+            <svg class="input-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+            </svg>
+            <input type="password" id="password" name="password" placeholder="Enter password" />
+            <button type="button" class="toggle-visibility" onclick="toggleVisibility('password', 'passwordBadge')">
+              <svg id="passwordEyeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.28 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="error-msg" id="passwordError">Password is required</div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Sign in &rarr;</button>
+        
+        <div class="success-banner" id="successBanner">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+          </svg>
+          <span>Credentials accepted &mdash; redirecting&hellip;</span>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script>
-    function toggle(fieldId) {
+    const eyeOffPath = "M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.28 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z";
+    const eyeOnPath = "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z";
+
+    function toggleVisibility(fieldId, badgeId) {
       const field = document.getElementById(fieldId);
+      const badgeText = document.querySelector(`#${badgeId} span`);
+      const badgeIcon = document.querySelector(`#${badgeId} svg path`);
+      const toggleIcon = document.querySelector(`#${fieldId}EyeIcon path`);
+      
       if (field.type === 'password') {
         field.type = 'text';
+        badgeText.textContent = 'visible';
+        badgeIcon.setAttribute('d', eyeOnPath);
+        toggleIcon.setAttribute('d', eyeOnPath);
       } else {
         field.type = 'password';
+        badgeText.textContent = 'masked';
+        badgeIcon.setAttribute('d', eyeOffPath);
+        toggleIcon.setAttribute('d', eyeOffPath);
       }
     }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const usernameError = document.getElementById('usernameError');
+      const passwordError = document.getElementById('passwordError');
+      const submitBtn = document.getElementById('submitBtn');
+      const successBanner = document.getElementById('successBanner');
+      
+      let isValid = true;
+      
+      if (!usernameInput.value.trim()) {
+        usernameError.style.display = 'block';
+        isValid = false;
+      } else {
+        usernameError.style.display = 'none';
+      }
+      
+      if (!passwordInput.value.trim()) {
+        passwordError.style.display = 'block';
+        isValid = false;
+      } else {
+        passwordError.style.display = 'none';
+      }
+      
+      if (isValid) {
+        submitBtn.disabled = true;
+        successBanner.style.display = 'flex';
+        
+        setTimeout(() => {
+          this.submit();
+        }, 1000);
+      }
+    });
   </script>
 </body>
 </html>

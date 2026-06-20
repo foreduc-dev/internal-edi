@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARMS Testmark Manager</title>
+    <!-- Modern Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent: #8b5cf6;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 2rem;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            flex: 1;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn-submit.loading .btn-text {
+            opacity: 0;
+        }
+
+        .btn-submit.loading .loader {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Generic Grid for Subjects and Tests */
+        .grid-container {
+            display: none;
+            margin-top: 2.5rem;
+            animation: fadeIn 0.4s ease;
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .item-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .item-card.active {
+            border-color: var(--accent);
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+        }
+
+        .item-card h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            color: #f8fafc;
+        }
+
+        .item-card p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .item-card .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        /* Table Styles */
+        .table-container {
+            display: none;
+            margin-top: 2.5rem;
+            animation: fadeIn 0.4s ease;
+            overflow-x: auto;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(30, 41, 59, 0.9);
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .mark-input {
+            width: 80px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            color: #6ee7b7;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .mark-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+            background: rgba(30, 41, 59, 1);
+        }
+        
+        .mark-input::-webkit-outer-spin-button,
+        .mark-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .mark-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .error-message {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3b82f6;
+        }
+        
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header" style="position: relative;">
+                <a href="{{ url_for('logout') }}" style="position: absolute; top: 0; right: 0; background: rgba(239, 68, 68, 0.1); color: #ef4444; text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-weight: 500; font-size: 0.85rem; border: 1px solid rgba(239, 68, 68, 0.2); transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">Logout</a>
+                <h1>ARMS Testmark Manager</h1>
+                <p>Fetch courses, view tests, and edit marklists securely</p>
+            </div>
+
+            <form id="fetchForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regNo">Registration Number</label>
+                        <input type="text" id="regNo" class="form-control" placeholder="e.g. 192524027" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="btn-text">Fetch Subjects</span>
+                    <div class="loader"></div>
+                </button>
+            </form>
+            
+            <div id="globalError" class="error-message"></div>
+
+            <!-- Subjects Selection Section -->
+            <div class="grid-container" id="subjectsContainer">
+                <h3 class="section-title"><div class="status-dot"></div> Available Subjects</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top:-0.5rem; margin-bottom:1rem;">Select a subject to view its tests</p>
+                <div class="item-grid" id="subjectsGrid">
+                    <!-- Subject cards injected here -->
+                </div>
+            </div>
+
+            <div id="testsLoading" class="loading-text" style="display: none; margin-top: 2rem;">
+                <div class="spinner"></div> Fetching tests...
+            </div>
+
+            <!-- Tests Selection Section -->
+            <div class="grid-container" id="testsContainer">
+                <h3 class="section-title"><div class="status-dot" style="background:#8b5cf6;"></div> Available Tests</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top:-0.5rem; margin-bottom:1rem;">Select a test to view the marklist</p>
+                <div class="item-grid" id="testsGrid">
+                    <!-- Test cards injected here -->
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div id="tableLoading" class="loading-text" style="display: none; margin-top: 2rem;">
+                <div class="spinner"></div> Fetching marklist...
+            </div>
+            
+            <div class="table-container" id="tableContainer">
+                <table id="marklistTable">
+                    <thead>
+                        <tr>
+                            <th>Reg ID</th>
+                            <th>Student Name</th>
+                            <th>Mark Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Save Marks Button -->
+            <button class="btn-submit" id="saveMarksBtn" style="display: none; margin-top: 1.5rem; width: auto; padding-left: 2.5rem; padding-right: 2.5rem;">
+                <span class="btn-text">Save Marks</span>
+                <div class="loader"></div>
+            </button>
+
+        </div>
+    </div>
+
+    <script>
+        const fetchForm = document.getElementById('fetchForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const subjectsContainer = document.getElementById('subjectsContainer');
+        const subjectsGrid = document.getElementById('subjectsGrid');
+        const testsContainer = document.getElementById('testsContainer');
+        const testsGrid = document.getElementById('testsGrid');
+        const tableContainer = document.getElementById('tableContainer');
+        const tableBody = document.getElementById('tableBody');
+        const globalError = document.getElementById('globalError');
+        const testsLoading = document.getElementById('testsLoading');
+        const tableLoading = document.getElementById('tableLoading');
+        const saveMarksBtn = document.getElementById('saveMarksBtn');
+
+        let currentCourseId = null; // Stores SubjectId
+        let currentCompetency = 'Model';
+        let currentTestId = null;
+
+        // Form Submit -> Fetch Subjects
+        fetchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const regNo = document.getElementById('regNo').value.trim();
+
+            if (!regNo) return;
+
+            // Reset UI
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            subjectsContainer.style.display = 'none';
+            testsContainer.style.display = 'none';
+            tableContainer.style.display = 'none';
+            saveMarksBtn.style.display = 'none';
+            globalError.style.display = 'none';
+            subjectsGrid.innerHTML = '';
+            testsGrid.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/fetch_subjects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ regNo })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    const dataObj = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+                    
+                    if (dataObj && dataObj.length > 0) {
+                        renderSubjects(dataObj);
+                        subjectsContainer.style.display = 'block';
+                    } else {
+                        showError("No enrolled subjects found for this registration number.");
+                    }
+                } else {
+                    showError(result.error || "Failed to fetch subjects");
+                }
+            } catch (error) {
+                showError("Connection error: " + error.message);
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+
+        function renderSubjects(subjects) {
+            subjects.forEach(subject => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <div class="badge">ID: ${subject.SubjectId}</div>
+                    <h4>${subject.SubjectCode}</h4>
+                    <p>${subject.SubjectName}</p>
+                `;
+                
+                card.addEventListener('click', () => {
+                    // Update active state
+                    document.querySelectorAll('#subjectsGrid .item-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    
+                    currentCourseId = subject.SubjectId;
+
+                    // Fetch Tests
+                    fetchTests(currentCourseId);
+                });
+                
+                subjectsGrid.appendChild(card);
+            });
+        }
+
+        async function fetchTests(courseId) {
+            testsContainer.style.display = 'none';
+            tableContainer.style.display = 'none';
+            saveMarksBtn.style.display = 'none';
+            globalError.style.display = 'none';
+            testsLoading.style.display = 'flex';
+            testsGrid.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/fetch_testmark', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ courseId })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    const dataObj = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+                    
+                    if (dataObj.Table && dataObj.Table.length > 0) {
+                        renderTests(dataObj.Table);
+                        testsContainer.style.display = 'block';
+                    } else {
+                        showError("No tests found for this subject.");
+                    }
+                } else {
+                    showError(result.error || "Failed to fetch tests");
+                }
+            } catch (error) {
+                showError("Connection error: " + error.message);
+            } finally {
+                testsLoading.style.display = 'none';
+            }
+        }
+
+        function renderTests(tests) {
+            tests.forEach(test => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <div class="badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd;">ID: ${test.TestId}</div>
+                    <h4>${test.TestName}</h4>
+                    <p>Competency: ${test.Competency}</p>
+                    <p style="margin-top:0.25rem;">Created: ${test.CreatedOn}</p>
+                `;
+                
+                card.addEventListener('click', () => {
+                    // Update active state
+                    document.querySelectorAll('#testsGrid .item-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    
+                    currentCompetency = test.Competency;
+                    currentTestId = test.TestId;
+
+                    // Fetch marklist
+                    fetchMarklist(currentCourseId, currentTestId);
+                });
+                
+                testsGrid.appendChild(card);
+            });
+        }
+
+        async function fetchMarklist(courseId, testId) {
+            tableContainer.style.display = 'none';
+            saveMarksBtn.style.display = 'none';
+            globalError.style.display = 'none';
+            tableLoading.style.display = 'flex';
+            tableBody.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/fetch_marklist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ courseId, testId })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    const dataObj = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+                    
+                    if (dataObj.Table && dataObj.Table.length > 0) {
+                        renderTable(dataObj.Table);
+                        tableContainer.style.display = 'block';
+                        saveMarksBtn.style.display = 'block';
+                    } else {
+                        showError("No marks found for this test.");
+                    }
+                } else {
+                    showError(result.error || "Failed to fetch marklist");
+                }
+            } catch (error) {
+                showError("Connection error: " + error.message);
+            } finally {
+                tableLoading.style.display = 'none';
+            }
+        }
+
+        function renderTable(marklist) {
+            marklist.forEach(student => {
+                const tr = document.createElement('tr');
+                tr.dataset.markId = student.MarkId;
+                tr.dataset.studentId = student.StudentId;
+                tr.innerHTML = `
+                    <td><strong>${student.RegId}</strong></td>
+                    <td>${student.StudentName}</td>
+                    <td>
+                        <input type="number" 
+                               class="mark-input" 
+                               value="${student.MarkValue}" 
+                               step="0.1" 
+                               onfocus="this.select()" />
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        saveMarksBtn.addEventListener('click', async () => {
+            if (!currentCourseId || !currentTestId) return;
+            
+            const rows = document.querySelectorAll('#tableBody tr');
+            const studentIds = [];
+            const markValues = [];
+            
+            rows.forEach(row => {
+                studentIds.push(row.dataset.studentId);
+                const markInput = row.querySelector('.mark-input');
+                markValues.push(markInput.value || 0); // fallback to 0 if empty
+            });
+            
+            // ARMS format requires a trailing comma
+            const studentIdList = studentIds.join(',') + ',';
+            const markValueList = markValues.join(',') + ',';
+            
+            saveMarksBtn.classList.add('loading');
+            saveMarksBtn.disabled = true;
+            globalError.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/submit_marks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        courseId: currentCourseId, 
+                        testId: currentTestId, 
+                        competency: currentCompetency,
+                        studentIdList,
+                        markValueList
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    const oldText = saveMarksBtn.querySelector('.btn-text').textContent;
+                    saveMarksBtn.querySelector('.btn-text').textContent = 'Saved Successfully!';
+                    saveMarksBtn.style.background = 'linear-gradient(to right, #10b981, #059669)';
+                    
+                    setTimeout(() => {
+                        saveMarksBtn.querySelector('.btn-text').textContent = oldText;
+                        saveMarksBtn.style.background = ''; // reset to default CSS background
+                    }, 3000);
+                } else {
+                    showError(result.error || "Failed to save marks");
+                }
+            } catch (error) {
+                showError("Connection error: " + error.message);
+            } finally {
+                saveMarksBtn.classList.remove('loading');
+                saveMarksBtn.disabled = false;
+            }
+        });
+
+        function showError(msg) {
+            globalError.textContent = msg;
+            globalError.style.display = 'block';
+            tableLoading.style.display = 'none';
+            testsLoading.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

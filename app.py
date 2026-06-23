@@ -12,8 +12,8 @@ LOCAL_USERNAME = os.getenv('APP_USER', 'kasif')
 LOCAL_PASSWORD = os.getenv('APP_PASS', 'kasifbrothers')
 
 # System credentials used in backend API calls (read from env or fallback to placeholder)
-SYSTEM_USERNAME = os.getenv('ARMS_USER', 'SSETSEC239')
-SYSTEM_PASSWORD = os.getenv('ARMS_PASS', 'SSETSEC239')
+SYSTEM_USERNAME = 'SSETSEC239'
+SYSTEM_PASSWORD = 'SSETSEC239'
 
 def login_required(f):
     """Enforces authentication for local app routes (UI only)."""
